@@ -1,6 +1,6 @@
 // Animation Timeline
 const animationTimeline = () => {
-  // Spit chars that needs to be animated individually
+  // Split chars that needs to be animated individually
   const textBoxChars = document.getElementsByClassName("hbd-chatbox")[0];
   const hbd = document.getElementsByClassName("wish-hbd")[0];
 
@@ -57,20 +57,38 @@ const animationTimeline = () => {
       },
       "-=1"
     )
-    .from(".three", 0.7, {
+    // --- PHẦN CHỈNH SỬA CHO CƯƠNG Ở ĐÂY ---
+    .from(".three .text-1", 0.7, {
       opacity: 0,
       y: 10,
-      // scale: 0.7
     })
     .to(
-      ".three",
+      ".three .text-1",
       0.7,
       {
         opacity: 0,
-        y: 10,
+        y: -10,
       },
-      "+=2"
+      "+=3"
     )
+    // Lệnh quan trọng: Ép dòng 2 hiển thị trước khi làm hiệu ứng opacity
+    .set(".three .text-2", { visibility: "visible" }) 
+    .fromTo(
+      ".three .text-2",
+      0.7,
+      { opacity: 0, y: 10 },
+      { opacity: 1, y: 0 }
+    )
+    .to(
+      ".three .text-2",
+      0.7,
+      {
+        opacity: 0,
+        y: -10,
+      },
+      "+=4"
+    )
+    // --- KẾT THÚC PHẦN CHỈNH SỬA ---
     .from(".four", 0.7, {
       scale: 0.2,
       opacity: 0,
@@ -108,7 +126,7 @@ const animationTimeline = () => {
     .to(".idea-3 strong", 0.5, {
       scale: 1.2,
       x: 10,
-      backgroundColor: "rgb(21, 161, 237)",
+      backgroundColor: "#e91e63", // Đổi sang hồng cho hợp tông
       color: "#fff",
     })
     .to(".idea-3", 0.7, ideaTextTransLeave, "+=1.5")
@@ -170,16 +188,21 @@ const animationTimeline = () => {
     )
     .staggerFromTo(
       ".baloons img",
-      2.5,
+      3, // Thời gian bay
       {
-        opacity: 0.9,
-        y: 1400,
+        opacity: 0,
+        y: 1000,
       },
       {
         opacity: 1,
-        y: -1000,
+        y: -1500,
+        // Tạo độ nghiêng ngẫu nhiên khi bay
+        rotation: () => Math.random() * 360,
+        // Làm tụi nó bay lệch trái lệch phải một chút cho tự nhiên
+        x: () => (Math.random() - 0.5) * 400, 
+        ease: Power1.easeOut,
       },
-      0.2
+      0.1 // Khoảng cách thời gian giữa mỗi icon hiện lên
     )
     .from(
       ".girl-dp",
@@ -205,7 +228,6 @@ const animationTimeline = () => {
       {
         opacity: 0,
         y: -50,
-        // scale: 0.3,
         rotation: 150,
         skewX: "30deg",
         ease: Elastic.easeOut.config(1, 0.5),
@@ -222,7 +244,7 @@ const animationTimeline = () => {
       {
         scale: 1,
         rotationY: 0,
-        color: "#ff69b4",
+        color: "#e91e63",
         ease: Expo.easeOut,
       },
       0.1,
@@ -265,9 +287,6 @@ const animationTimeline = () => {
       "+=1"
     );
 
-  // tl.seek("currentStep");
-  // tl.timeScale(2);
-
   // Restart Animation on click
   const replyBtn = document.getElementById("replay");
   replyBtn.addEventListener("click", () => {
@@ -287,7 +306,8 @@ const fetchData = () => {
               .getElementById(customData)
               .setAttribute("src", data[customData]);
           } else {
-            document.getElementById(customData).innerText = data[customData];
+            const el = document.getElementById(customData);
+            if (el) el.innerText = data[customData];
           }
         }
       });
